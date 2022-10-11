@@ -36,40 +36,54 @@ def password_decrypt(token: bytes, password: str) -> bytes:
     key = _derive_key(password.encode(), salt, iterations)
     return Fernet(key).decrypt(token)
 
+
+def usage_error():
+    print("Usage: 'python3 secure_file.py <mode>[encrypt: '-e', decrypt: '-d'] '<password>' <target_filename>'")
+    sys.exit(1) 
+
 if __name__ == '__main__':
     if len(sys.argv) < 2:
-        print("Usage: 'python3 secure_file.py <mode>[encrypt: '-e', decrypt: '-d'] '<password>' <encrypt_filename>'")
-        sys.exit(1)
+        usage_error()
     mode = sys.argv[1]
     if mode != "-e" and mode != "-d" or len(sys.argv) < 4:
-        print("Usage: 'python3 secure_file.py <mode>[encrypt: '-e', decrypt: '-d'] '<password>' <encrypt_filename>'")
-        sys.exit(1)
+        usage_error()
     password = sys.argv[2]
     target_encrypt_file = sys.argv[3]
     if mode == "-e":
         print("Mode: encrypt")
         try:
-            with open("to_encrypt.txt", "rb") as in_file, open(target_encrypt_file, "wb") as out_file:
+            out_encrypted_file = target_encrypt_file.split(".")
+            if len(out_encrypted_file) > 1:
+                out_encrypted_file = out_encrypted_file[0] + "_encrypted." + out_encrypted_file[1]
+            else:
+                out_encrypted_file = out_encrypted_file[0] + "_encrypted"
+            with open(target_encrypt_file, "rb") as in_file, open(out_encrypted_file, "wb") as out_file:
                 encrypt_bytes = password_encrypt(in_file.read(), password)
                 out_file.write(encrypt_bytes)
-            with open("to_encrypt.txt", "w") as out_file:
-                out_file.write("")
-            print(encrypt_bytes)
-            print("to_encrypt.txt contents deleted, encrypted contents moved to " + target_encrypt_file)
+            print("Encrypted version of '" + target_encrypt_file + "' created with name '" + out_encrypted_file + "'")
         except IOError:
-            print("error: IO error, make sure encrypt staging file 'to_encrypt.txt' exists in this directory")
+            print("error: IO error, make sure file to encrypt '" + target_encrypt_file + "' exists in this directory")
             sys.exit(1)
+        print("ENCRYPT SUCCESS")
     else:
         print("Mode: decrypt")
         try:
-            with open(target_encrypt_file, "rb") as in_file:
+            out_decrypted_file = target_encrypt_file.split(".")
+            out_decrypted_file[0] = out_decrypted_file[0].split("_encrypted")[0]
+            if len(out_decrypted_file) > 1:
+                out_decrypted_file = out_decrypted_file[0] + "_decrypted." + out_decrypted_file[1]
+            else:
+                out_decrypted_file = out_decrypted_file[0] + "_decrypted"
+            with open(target_encrypt_file, "rb") as in_file, open(out_decrypted_file, "wb") as out_file:
                 encrypt_bytes = in_file.read()
                 try:
                     decrypted = password_decrypt(encrypt_bytes, password)
                 except:
                     print("error: incorrect password")
                     sys.exit(1)
-            print(decrypted.decode())
+                out_file.write(decrypted)
+            print("Decrypted version of '" + target_encrypt_file + "' created with name '" + out_decrypted_file + "'")
         except IOError:
-            print("error: IO error, make sure encrypted filename passed is spelled correctly")
+            print("error: IO error, make sure encrypted file '" + target_encrypt_file + "' is spelled correctly")
             sys.exit(1)
+        print("DECRYPT SUCCESS")
