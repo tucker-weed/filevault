@@ -39,7 +39,7 @@ def password_decrypt(token: bytes, password: str) -> bytes:
 
 
 def usage_error():
-    print("Usage: 'python3 secure_file.py <mode>[encrypt: '-e', decrypt: '-d'] '<password>' <target_filename>'")
+    print("Usage: 'python3 secure_file.py <mode>[encrypt: '-e', decrypt: '-d'] <target_filename>'")
     sys.exit(1) 
 
 if __name__ == '__main__':

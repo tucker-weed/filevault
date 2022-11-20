@@ -4,7 +4,7 @@
 
 Run the script `secure_file.py` for encryption or decryption.
 
-Usage: `python3 secure_file.py <mode>[encrypt: '-e', decrypt: '-d'] '<password>' <target_filename>`
+Usage: `python3 secure_file.py <mode>[encrypt: '-e', decrypt: '-d'] <target_filename>`
 
 Check the directory where the script was run from for your encrypted or decrypted file.
 
