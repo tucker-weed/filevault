@@ -49,7 +49,9 @@ if __name__ == '__main__':
     if mode != "-e" and mode != "-d" or len(sys.argv) < 3:
         usage_error()
     password = getpass()
-    target_encrypt_file = sys.argv[2]
+    target_encrypt_file = sys.argv[2].split("/")
+    target_encrypt_file = target_encrypt_file[len(target_encrypt_file) - 1]
+    print(target_encrypt_file)
     if mode == "-e":
         print("Mode: encrypt")
         try:
@@ -58,7 +60,7 @@ if __name__ == '__main__':
                 out_encrypted_file = out_encrypted_file[0] + "_encrypted." + out_encrypted_file[1]
             else:
                 out_encrypted_file = out_encrypted_file[0] + "_encrypted"
-            with open(target_encrypt_file, "rb") as in_file, open(out_encrypted_file, "wb") as out_file:
+            with open(sys.argv[2], "rb") as in_file, open(out_encrypted_file, "wb") as out_file:
                 encrypt_bytes = password_encrypt(in_file.read(), password)
                 out_file.write(encrypt_bytes)
             print("Encrypted version of '" + target_encrypt_file + "' created with name '" + out_encrypted_file + "'")
@@ -75,7 +77,7 @@ if __name__ == '__main__':
                 out_decrypted_file = out_decrypted_file[0] + "_decrypted." + out_decrypted_file[1]
             else:
                 out_decrypted_file = out_decrypted_file[0] + "_decrypted"
-            with open(target_encrypt_file, "rb") as in_file, open(out_decrypted_file, "wb") as out_file:
+            with open(sys.argv[2], "rb") as in_file, open(out_decrypted_file, "wb") as out_file:
                 encrypt_bytes = in_file.read()
                 try:
                     decrypted = password_decrypt(encrypt_bytes, password)
