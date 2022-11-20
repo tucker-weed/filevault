@@ -1,5 +1,6 @@
 import secrets
 from base64 import urlsafe_b64encode as b64e, urlsafe_b64decode as b64d
+from getpass import getpass
 
 from cryptography.fernet import Fernet
 from cryptography.hazmat.backends import default_backend
@@ -45,10 +46,10 @@ if __name__ == '__main__':
     if len(sys.argv) < 2:
         usage_error()
     mode = sys.argv[1]
-    if mode != "-e" and mode != "-d" or len(sys.argv) < 4:
+    if mode != "-e" and mode != "-d" or len(sys.argv) < 3:
         usage_error()
-    password = sys.argv[2]
-    target_encrypt_file = sys.argv[3]
+    password = getpass()
+    target_encrypt_file = sys.argv[2]
     if mode == "-e":
         print("Mode: encrypt")
         try:
